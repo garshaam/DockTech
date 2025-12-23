@@ -10,7 +10,7 @@ import { SettingsPopup } from "../../popups/SettingsPopup";
 import { Button } from "../../ui/Button";
 
 import { WorldView } from "../../client/worldView";
-import { currentRoom } from "../../client/client";
+import { currentRoom, roomStateCallbacks } from "../../client/client";
 import { User } from "../../objects/user";
 
 import type { Room } from "colyseus.js";
@@ -20,7 +20,7 @@ import { State } from "../../server/rooms/State";
 
 /** The screen that holds the app */
 export class MainScreen extends Container {
-  private world = new WorldView();
+  private worldview = new WorldView();
 
   /** Assets bundles required by this screen */
   public static assetBundles = ["main"];
@@ -38,6 +38,12 @@ export class MainScreen extends Container {
 
     this.mainContainer = new Container();
     this.addChild(this.mainContainer);
+
+    const room = currentRoom();
+    if (!room) throw new Error("Not in a room. Cannot add/remove drawn users.");
+
+    const $ = roomStateCallbacks();
+
     //this.bouncer = new Bouncer();
 
     const buttonAnimations = {
@@ -74,19 +80,19 @@ export class MainScreen extends Container {
     );
     this.addChild(this.settingsButton);
 
-    let room : Room<State> = currentRoom();
+    $(room.state).entities.onAdd((entity, sessionId: string) => {
+      this.worldview.addPlayer({ sessionId, x: entity.x, y: entity.y });
 
-    room.state.players.onAdd((user: User, id: string) => {
-      this.world.addPlayer({ id, x: user.x, y: user.y });
-
-      user.onChange(() => {
-        this.world.updatePlayer({ id, x: user.x, y: user.y });
+      $(entity).onChange(() => {
+        this.worldview.updatePlayer({ sessionId, x: entity.x, y: entity.y });
       });
+      
     });
+    $(room.state).entities.onRemove((_, sessionId: string) => {
+      this.worldview.removePlayer(sessionId);
+    });
+    this.addChild(this.worldview.container);
 
-    room.state.players.onRemove((_user: User, id: string) => {
-      this.world.removePlayer(id);
-    });
   }
 
   /** Prepare the screen just before showing */

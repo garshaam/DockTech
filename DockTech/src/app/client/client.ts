@@ -61,8 +61,8 @@ export async function createRoom(
   return { room, roomId: room.roomId };
 }
 
-/** Guest joins an existing lobby by roomId */
-export async function joinLobbyById(
+/** Guest joins an existing room by roomId */
+export async function joinRoomById(
   endpoint: string,
   roomId: string,
   username: string
@@ -90,13 +90,13 @@ export async function leaveRoom(consented: boolean = true): Promise<void> {
 }
 
 /** Access schema callbacks for the active room */
-export function lobbyStateCallbacks() {
+export function roomStateCallbacks() {
   if (!_room) throw new Error("Not in a room.");
   return getStateCallbacks(_room);
 }
 
-/** Send a message to the lobby */
-export function sendToLobby<T = unknown>(type: string, payload?: T): void {
+/** Send a message to the room */
+export function sendToRoom<T = unknown>(type: string, payload?: T): void {
   if (!_room) throw new Error("Not in a room.");
   _room.send(type as any, payload as any);
 }
