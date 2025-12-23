@@ -8,20 +8,12 @@ import { engine } from "../../getEngine";
 import { PausePopup } from "../../popups/PausePopup";
 import { SettingsPopup } from "../../popups/SettingsPopup";
 import { Button } from "../../ui/Button";
+import { joinOrCreateRoom } from "../../client/client";
 
-import { WorldView } from "../../client/worldView";
-import { currentRoom } from "../../client/client";
-import { User } from "../../objects/user";
+import { LoadScreen } from "../LoadScreen";
+import { MainScreen } from "./MainScreen";
 
-import type { Room } from "colyseus.js";
-import { State } from "../../server/rooms/State";
-
-//import { Bouncer } from "./Bouncer";
-
-/** The screen that holds the app */
-export class MainScreen extends Container {
-  private world = new WorldView();
-
+export class JoinScreen extends Container {
   /** Assets bundles required by this screen */
   public static assetBundles = ["main"];
 
@@ -30,7 +22,6 @@ export class MainScreen extends Container {
   private settingsButton: FancyButton;
   private addButton: FancyButton;
   private removeButton: FancyButton;
-  //private bouncer: Bouncer;
   private paused = false;
 
   constructor() {
@@ -38,7 +29,6 @@ export class MainScreen extends Container {
 
     this.mainContainer = new Container();
     this.addChild(this.mainContainer);
-    //this.bouncer = new Bouncer();
 
     const buttonAnimations = {
       hover: {
@@ -74,20 +64,23 @@ export class MainScreen extends Container {
     );
     this.addChild(this.settingsButton);
 
-    let room : Room<State> = currentRoom();
-
-    room.state.players.onAdd((user: User, id: string) => {
-      this.world.addPlayer({ id, x: user.x, y: user.y });
-
-      user.onChange(() => {
-        this.world.updatePlayer({ id, x: user.x, y: user.y });
-      });
+    this.addButton = new Button({
+      text: "Join Game",
+      width: 175,
+      height: 110,
     });
 
-    room.state.players.onRemove((_user: User, id: string) => {
-      this.world.removePlayer(id);
-    });
+    this.addButton.onPress.connect(() => this.joinRoom());
+    this.addChild(this.addButton);
   }
+
+    private joinRoom() {
+        joinOrCreateRoom("splendid_username");
+
+        this.addButton.onPress.connect(async () => {
+            await engine().navigation.showScreen(MainScreen);
+        });
+    }
 
   /** Prepare the screen just before showing */
   public prepare() {}
@@ -96,7 +89,7 @@ export class MainScreen extends Container {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public update(_time: Ticker) {
     if (this.paused) return;
-
+    //this.bouncer.update();
   }
 
   /** Pause gameplay - automatically fired when a popup is presented */
@@ -125,12 +118,8 @@ export class MainScreen extends Container {
     this.pauseButton.y = 30;
     this.settingsButton.x = width - 30;
     this.settingsButton.y = 30;
-    this.removeButton.x = width / 2 - 100;
-    this.removeButton.y = height - 75;
     this.addButton.x = width / 2 + 100;
     this.addButton.y = height - 75;
-
-    
   }
 
   /** Show screen with animations */
@@ -139,7 +128,9 @@ export class MainScreen extends Container {
 
     const elementsToAnimate = [
       this.pauseButton,
-      this.settingsButton
+      this.settingsButton,
+      this.addButton,
+      this.removeButton,
     ];
 
     let finalPromise!: AnimationPlaybackControls;

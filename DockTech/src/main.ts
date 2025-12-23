@@ -1,10 +1,11 @@
 import { setEngine } from "./app/getEngine";
 import { LoadScreen } from "./app/screens/LoadScreen";
-import { MainScreen } from "./app/screens/main/MainScreen";
+import { JoinScreen } from "./app/screens/main/JoinScreen";
+//import { MainScreen } from "./app/screens/main/MainScreen";
 import { userSettings } from "./app/utils/userSettings";
 import { CreationEngine } from "./engine/engine";
-import { GameManager } from "./app/game/gameManager";
-import { User } from "./app/game/user";
+//import { GameManager } from "./app/game/gameManager";
+//import { User } from "./app/game/user";
 
 /**
  * Importing these modules will automatically register their plugins with the engine.
@@ -16,7 +17,7 @@ import "@pixi/sound";
 const engine = new CreationEngine();
 setEngine(engine);
 
-const gameManager = new GameManager();
+//const gameManager = new GameManager();
 
 (async () => {
   // Initialize the creation engine instance
@@ -26,7 +27,7 @@ const gameManager = new GameManager();
   });
 
   // Create players
-  
+
 
   // Initialize the user settings
   userSettings.init();
@@ -34,5 +35,7 @@ const gameManager = new GameManager();
   // Show the load screen
   await engine.navigation.showScreen(LoadScreen);
   // Show the main screen once the load screen is dismissed
-  await engine.navigation.showScreen(MainScreen);
+  await engine.navigation.showScreen(JoinScreen);
+
+  //await engine.navigation.showScreen(MainScreen);
 })();
