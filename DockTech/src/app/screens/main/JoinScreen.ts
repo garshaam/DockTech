@@ -128,9 +128,7 @@ export class JoinScreen extends Container {
 
     const elementsToAnimate = [
       this.pauseButton,
-      this.settingsButton,
-      this.addButton,
-      this.removeButton,
+      this.settingsButton
     ];
 
     let finalPromise!: AnimationPlaybackControls;

@@ -1,10 +1,10 @@
-import { Schema, type, entity } from "@colyseus/schema";
+import { type, entity } from "@colyseus/schema";
 import { Entity } from "./entity";
 
 @entity
 export class User extends Entity {
-    @type("string") _username!: string;
-    @type("number") _speed!: number;
+    @type("string") _username: string = "";
+    @type("number") _speed: number = 0;
     
     angle: number = 0; // Where is zero angle?
 
@@ -17,7 +17,15 @@ export class User extends Entity {
         return this._username;
     }
 
+    public set username(value: string) {
+        this._username = value;
+    }
+
     public get speed(): number {
         return this._speed;
+    }
+
+    public set speed(value: number) {
+        this._speed = value;
     }
 }

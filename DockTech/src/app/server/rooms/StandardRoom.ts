@@ -18,7 +18,7 @@ export class StandardRoom extends Room<State> {
 
         const entity = this.state.entities.get(client.sessionId);
 
-        if (entity && entity instanceof User) {
+        if (entity) {
             //const dst = Entity.distance(entity, message as Entity); // This cast is ok
             // change angle
             entity.angle = Math.atan2(entity.y - message.y, entity.x - message.x);  
@@ -49,6 +49,7 @@ export class StandardRoom extends Room<State> {
         this.state.createUser(client.sessionId, username);
     } catch (error) {
         console.log("Error adding client. Check if options object is defined properly.")
+        console.log(error);
     }
     
   }
