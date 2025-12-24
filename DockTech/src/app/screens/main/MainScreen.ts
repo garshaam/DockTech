@@ -121,6 +121,9 @@ export class MainScreen extends Container {
 
   /** Resize the screen, fired whenever window size changes */
   public resize(width: number, height: number) {
+    console.log(
+      `Viewport: ${width}x${height}px | Screen: ${screen.width}x${screen.height}px`
+    );
     const centerX = width * 0.5;
     const centerY = height * 0.5;
 
