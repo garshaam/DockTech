@@ -3,6 +3,7 @@ import { Entity } from "./entity";
 
 @entity
 export class User extends Entity {
+    override kind: "user" = "user";
     @type("string") _username: string = "";
     @type("number") _speed: number = 0;
     

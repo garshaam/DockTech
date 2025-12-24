@@ -28,8 +28,6 @@ export class MainScreen extends Container {
   public mainContainer: Container;
   private pauseButton: FancyButton;
   private settingsButton: FancyButton;
-  private addButton: FancyButton;
-  private removeButton: FancyButton;
   //private bouncer: Bouncer;
   private paused = false;
 
@@ -81,15 +79,16 @@ export class MainScreen extends Container {
     this.addChild(this.settingsButton);
 
     $(room.state).entities.onAdd((entity, sessionId: string) => {
-      this.worldview.addPlayer({ sessionId, x: entity.x, y: entity.y });
+      //console.log("food.kind =", entity.kind);
+      this.worldview.addEntity( entity, sessionId );
 
       $(entity).onChange(() => {
-        this.worldview.updatePlayer({ sessionId, x: entity.x, y: entity.y });
+        this.worldview.updateEntity( entity, sessionId );
       });
       
     });
     $(room.state).entities.onRemove((_, sessionId: string) => {
-      this.worldview.removePlayer(sessionId);
+      this.worldview.removeEntity(sessionId);
     });
     this.addChild(this.worldview.container);
 
@@ -131,12 +130,6 @@ export class MainScreen extends Container {
     this.pauseButton.y = 30;
     this.settingsButton.x = width - 30;
     this.settingsButton.y = 30;
-    this.removeButton.x = width / 2 - 100;
-    this.removeButton.y = height - 75;
-    this.addButton.x = width / 2 + 100;
-    this.addButton.y = height - 75;
-
-    
   }
 
   /** Show screen with animations */
@@ -169,5 +162,6 @@ export class MainScreen extends Container {
     if (!engine().navigation.currentPopup) {
       engine().navigation.presentPopup(PausePopup);
     }
+    console.log(this);
   }
 }

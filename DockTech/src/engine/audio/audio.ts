@@ -66,7 +66,7 @@ export class SFX {
   /** Volume scale for new instances */
   private volume = 1;
 
-  /** Play an one-shot sound effect */
+  /** Play a one-shot sound effect */
   public play(alias: string, options?: PlayOptions) {
     const volume = this.volume * (options?.volume ?? 1);
     sound.play(alias, { ...options, volume });

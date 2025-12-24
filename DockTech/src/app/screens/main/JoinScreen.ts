@@ -21,7 +21,6 @@ export class JoinScreen extends Container {
   private pauseButton: FancyButton;
   private settingsButton: FancyButton;
   private addButton: FancyButton;
-  private removeButton: FancyButton;
   private paused = false;
 
   constructor() {
@@ -74,12 +73,12 @@ export class JoinScreen extends Container {
     this.addChild(this.addButton);
   }
 
-    private joinRoom() {
-        joinOrCreateRoom("splendid_username");
+    private async joinRoom() {
+        await joinOrCreateRoom("splendid_username");
 
-        this.addButton.onPress.connect(async () => {
-            await engine().navigation.showScreen(MainScreen);
-        });
+        //TO DO: When you click the button you should get knocked to the next screen
+
+        await engine().navigation.showScreen(MainScreen);
     }
 
   /** Prepare the screen just before showing */

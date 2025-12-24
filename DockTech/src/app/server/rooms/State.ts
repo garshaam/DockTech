@@ -4,8 +4,9 @@ import { Schema, type, MapSchema, entity } from "@colyseus/schema";
 import { User } from "../../objects/user";
 import { Entity } from "../../objects/entity";
 
-const WORLD_SIZE = 2000;
+const WORLD_SIZE = 200;
 
+@entity
 export class State extends Schema {
 
   width = WORLD_SIZE;
@@ -56,9 +57,9 @@ export class State extends Schema {
 
         // Moving all users
         for (const entity of this.entities.values()) {
-            if (entity instanceof User && entity.speed > 0) {
-                entity.x -= Math.cos(entity.angle) * entity.speed;
-                entity.y -= Math.sin(entity.angle) * entity.speed;
+            if (entity.kind === "user" && (entity as User).speed > 0) {
+                entity.x -= Math.cos((entity as User).angle) * (entity as User).speed;
+                entity.y -= Math.sin((entity as User).angle) * (entity as User).speed;
 
                 if (entity.x < 0) entity.x = 0;
                 if (entity.x > WORLD_SIZE) entity.x = WORLD_SIZE;

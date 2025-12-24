@@ -2,6 +2,7 @@ import { Schema, type, entity } from "@colyseus/schema";
 
 @entity
 export class Entity extends Schema {
+    @type("string") kind: "entity" | "user" = "entity"; // Can be entity or user, but default is entity
     @type("float64") x: number = 0;
     @type("float64") y: number = 0;
 

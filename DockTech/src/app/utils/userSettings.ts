@@ -50,5 +50,5 @@ class UserSettings {
   }
 }
 
-/** SHared user settings instance */
+/** Shared user settings instance */
 export const userSettings = new UserSettings();

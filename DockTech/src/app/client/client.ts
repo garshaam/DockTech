@@ -18,6 +18,7 @@ function getClient(endpoint: string): Client {
 }
 
 export function currentRoom(): Room<State> | null {
+  //console.log(_room);
   return _room;
 }
 
@@ -38,6 +39,9 @@ export async function joinOrCreateRoom(
   _room = room;
 
   wireRoom(room);
+
+  //console.log(room);
+
   return { room, roomId: room.roomId };
 }
 

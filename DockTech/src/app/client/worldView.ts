@@ -1,10 +1,12 @@
 import { Container, Graphics } from "pixi.js";
+import { Entity } from "../objects/entity";
+import { User } from "../objects/user";
 
 // Snapshot coming from state/network updates
-export type PlayerSnapshot = { sessionId: string; x: number; y: number };
+//export type EntitySnapshot = { sessionId: string; x: number; y: number };
 
 // What is actually displayed to the screen
-type PlayerRender = {g: Graphics; targetX: number; targetY: number; };
+type EntityRender = {g: Graphics; targetX: number; targetY: number; };
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -14,7 +16,7 @@ export class WorldView {
   public readonly container = new Container();
 
   // sessionId -> render data (sprite + targets)
-  private players = new Map<string, PlayerRender>();
+  private entityRenders = new Map<string, EntityRender>();
 
   private _interpolation = false;
   private _raf: number | null = null;
@@ -25,42 +27,56 @@ export class WorldView {
   /** Pixels close enough to snap (avoids endless tiny lerps) */
   public snapEpsilon = 0.02;
 
-  addPlayer(p: PlayerSnapshot) {
-    const g = new Graphics().circle(0, 0, 10).fill(0xffffff);
-    g.x = p.x;
-    g.y = p.y;
+  addEntity(entity: Entity, sessionId: string) {
+    //console.log(entity.kind);
+    if (entity.kind === "entity") {
+      const g = new Graphics().circle(0, 0, 100).fill(0xff0f0f);
+      g.x = entity.x;
+      g.y = entity.y;
 
-    this.players.set(p.sessionId, { g, targetX: p.x, targetY: p.y });
-    this.container.addChild(g);
+      this.entityRenders.set(sessionId, { g, targetX: entity.x, targetY: entity.y });
+      this.container.addChild(g);
 
-    this.startInterpolation();
+      this.startInterpolation();
+    }
+    if (entity.kind === "user") {
+      const g = new Graphics().circle(0, 0, 100).fill(0xf00f0f);
+      g.x = entity.x;
+      g.y = entity.y;
+
+      this.entityRenders.set(sessionId, { g, targetX: entity.x, targetY: entity.y });
+      this.container.addChild(g);
+
+      this.startInterpolation();
+    }
+    
   }
 
   /** Call this whenever you receive a new position from the server */
-  updatePlayer(p: PlayerSnapshot) {
-    const r = this.players.get(p.sessionId);
+  updateEntity(entity: Entity, sessionId: string) {
+    const r = this.entityRenders.get(sessionId);
     if (!r) return;
 
-    r.targetX = p.x;
-    r.targetY = p.y;
+    r.targetX = entity.x;
+    r.targetY = entity.y;
 
     this.startInterpolation();
   }
 
-  removePlayer(sessionId: string) {
-    const r = this.players.get(sessionId);
+  removeEntity(sessionId: string) {
+    const r = this.entityRenders.get(sessionId);
     if (!r) return;
 
     r.g.destroy();
-    this.players.delete(sessionId);
+    this.entityRenders.delete(sessionId);
 
-    if (this.players.size === 0) this.stopInterpolation();
+    if (this.entityRenders.size === 0) this.stopInterpolation();
   }
 
   destroy() {
     this.stopInterpolation();
     this.container.destroy({ children: true });
-    this.players.clear();
+    this.entityRenders.clear();
   }
 
   private startInterpolation() {
@@ -80,7 +96,7 @@ export class WorldView {
   private loop = () => {
     let anyMoving = false;
 
-    for (const { g, targetX, targetY } of this.players.values()) {
+    for (const { g, targetX, targetY } of this.entityRenders.values()) {
       const dx = targetX - g.x;
       const dy = targetY - g.y;
 
